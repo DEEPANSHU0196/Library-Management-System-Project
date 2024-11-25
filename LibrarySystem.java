@@ -21,10 +21,9 @@ class Book {
 }
 
 public class LibrarySystem {
-    static Book[] books = new Book[100]; // Fixed size array for simplicity
+    static Book[] books = new Book[100]; 
     static int bookCount = 0;
 
-    // Add a book to the system
     public static void addBook(String title, String author, String genre, String isbn) {
         books[bookCount++] = new Book(title, author, genre, isbn);
         System.out.println("Book added successfully!");
@@ -49,7 +48,7 @@ public class LibrarySystem {
             if (books[i].title.equalsIgnoreCase(title) && books[i].isAvailable) {
                 books[i].isAvailable = false;
                 books[i].borrowedBy = user;
-                books[i].dueDate = currentDay + returnAfterDays; // Set the due date
+                books[i].dueDate = currentDay + returnAfterDays; 
                 System.out.println("Book borrowed successfully! Due in " + returnAfterDays + " days.");
                 return;
             }
@@ -75,7 +74,7 @@ public class LibrarySystem {
                 // Notify reserved user if applicable
                 if (books[i].reservedBy != null) {
                     System.out.println("Book reserved by " + books[i].reservedBy + " will be notified.");
-                    books[i].isAvailable = false; // Book goes to reserved user
+                    books[i].isAvailable = false; 
                     books[i].borrowedBy = books[i].reservedBy;
                     books[i].reservedBy = null;
                 }
@@ -86,8 +85,6 @@ public class LibrarySystem {
         }
         System.out.println("Book not found or user mismatch.");
     }
-
-    // Reserve a book
     public static void reserveBook(String title, String user) {
         for (int i = 0; i < bookCount; i++) {
             if (books[i].title.equalsIgnoreCase(title) && !books[i].isAvailable && books[i].reservedBy == null) {
@@ -120,7 +117,7 @@ public class LibrarySystem {
         while (true) {
             System.out.print("\nEnter your choice: ");
             int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
+            scanner.nextLine(); 
 
             switch (choice) {
                 case 1:
@@ -130,12 +127,12 @@ public class LibrarySystem {
                 case 2:
                     System.out.print("Enter title, user, current day (e.g., 1-365), return after days: ");
                     borrowBook(scanner.nextLine(), scanner.nextLine(), scanner.nextInt(), scanner.nextInt());
-                    scanner.nextLine(); // Consume newline
+                    scanner.nextLine(); 
                     break;
                 case 3:
                     System.out.print("Enter title, user, and current day: ");
                     returnBook(scanner.nextLine(), scanner.nextLine(), scanner.nextInt());
-                    scanner.nextLine(); // Consume newline
+                    scanner.nextLine(); 
                     break;
                 case 4:
                     System.out.print("Enter title and user: ");
