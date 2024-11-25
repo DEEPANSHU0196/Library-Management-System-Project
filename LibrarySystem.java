@@ -1,3 +1,7 @@
+import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
+
 class Book {
     String title;
     String author;
@@ -21,11 +25,13 @@ class Book {
 }
 
 public class LibrarySystem {
-    static Book[] books = new Book[100]; 
+    static List<Book> books = new ArrayList<>(); // Using ArrayList for dynamic size
     static int bookCount = 0;
 
+    // Add a book to the system
     public static void addBook(String title, String author, String genre, String isbn) {
-        books[bookCount++] = new Book(title, author, genre, isbn);
+        books.add(new Book(title, author, genre, isbn));
+        bookCount++;
         System.out.println("Book added successfully!");
     }
 
@@ -33,11 +39,12 @@ public class LibrarySystem {
     public static void searchBook(String query) {
         System.out.println("Search Results:");
         for (int i = 0; i < bookCount; i++) {
-            if (books[i].title.contains(query) || books[i].author.contains(query) ||
-                books[i].genre.contains(query) || books[i].isbn.contains(query)) {
-                System.out.println(books[i].title + " by " + books[i].author +
-                        " (Genre: " + books[i].genre + ", ISBN: " + books[i].isbn +
-                        ", Available: " + books[i].isAvailable + ")");
+            Book book = books.get(i);
+            if (book.title.contains(query) || book.author.contains(query) ||
+                book.genre.contains(query) || book.isbn.contains(query)) {
+                System.out.println(book.title + " by " + book.author +
+                        " (Genre: " + book.genre + ", ISBN: " + book.isbn +
+                        ", Available: " + book.isAvailable + ")");
             }
         }
     }
@@ -45,10 +52,11 @@ public class LibrarySystem {
     // Borrow a book
     public static void borrowBook(String title, String user, int currentDay, int returnAfterDays) {
         for (int i = 0; i < bookCount; i++) {
-            if (books[i].title.equalsIgnoreCase(title) && books[i].isAvailable) {
-                books[i].isAvailable = false;
-                books[i].borrowedBy = user;
-                books[i].dueDate = currentDay + returnAfterDays; 
+            Book book = books.get(i);
+            if (book.title.equalsIgnoreCase(title) && book.isAvailable) {
+                book.isAvailable = false;
+                book.borrowedBy = user;
+                book.dueDate = currentDay + returnAfterDays; // Set the due date
                 System.out.println("Book borrowed successfully! Due in " + returnAfterDays + " days.");
                 return;
             }
@@ -59,24 +67,25 @@ public class LibrarySystem {
     // Return a book
     public static void returnBook(String title, String user, int currentDay) {
         for (int i = 0; i < bookCount; i++) {
-            if (books[i].title.equalsIgnoreCase(title) && user.equals(books[i].borrowedBy)) {
+            Book book = books.get(i);
+            if (book.title.equalsIgnoreCase(title) && user.equals(book.borrowedBy)) {
                 // Check for overdue
-                if (currentDay > books[i].dueDate) {
-                    int daysOverdue = currentDay - books[i].dueDate;
+                if (currentDay > book.dueDate) {
+                    int daysOverdue = currentDay - book.dueDate;
                     System.out.println("Book is overdue! Penalty: " + daysOverdue * 10 + " units.");
                 }
 
                 // Reset book status
-                books[i].isAvailable = true;
-                books[i].borrowedBy = null;
-                books[i].dueDate = -1;
+                book.isAvailable = true;
+                book.borrowedBy = null;
+                book.dueDate = -1;
 
                 // Notify reserved user if applicable
-                if (books[i].reservedBy != null) {
-                    System.out.println("Book reserved by " + books[i].reservedBy + " will be notified.");
-                    books[i].isAvailable = false; 
-                    books[i].borrowedBy = books[i].reservedBy;
-                    books[i].reservedBy = null;
+                if (book.reservedBy != null) {
+                    System.out.println("Book reserved by " + book.reservedBy + " will be notified.");
+                    book.isAvailable = false; // Book goes to reserved user
+                    book.borrowedBy = book.reservedBy;
+                    book.reservedBy = null;
                 }
 
                 System.out.println("Book returned successfully!");
@@ -85,10 +94,13 @@ public class LibrarySystem {
         }
         System.out.println("Book not found or user mismatch.");
     }
+
+    // Reserve a book
     public static void reserveBook(String title, String user) {
         for (int i = 0; i < bookCount; i++) {
-            if (books[i].title.equalsIgnoreCase(title) && !books[i].isAvailable && books[i].reservedBy == null) {
-                books[i].reservedBy = user;
+            Book book = books.get(i);
+            if (book.title.equalsIgnoreCase(title) && !book.isAvailable && book.reservedBy == null) {
+                book.reservedBy = user;
                 System.out.println("Book reserved successfully!");
                 return;
             }
@@ -98,26 +110,26 @@ public class LibrarySystem {
 
     public static void main(String[] args) {
         // Add sample books
-    addBook("Java Programming", "John Doe", "Programming", "12345");
-    addBook("Cyber Security Essentials", "Deepanshu Yadav", "Cybersecurity", "67890");
-    addBook("Data Structures", "Alice Smith", "Programming", "11111");
-    addBook("Operating Systems", "Bob Johnson", "Technology", "22222");
-    addBook("Artificial Intelligence", "Carol Lee", "AI", "33333");
-    addBook("Networking Basics", "David Kim", "Networking", "44444");
-    addBook("Database Management", "Eve Adams", "Database", "55555");
-    addBook("Web Development", "Frank Wright", "Web", "66666");
-    addBook("Machine Learning", "Grace Hopper", "AI", "77777");
-    addBook("Cyber Defense", "Alan Turing", "Cybersecurity", "88888");
+        addBook("Java Programming", "John Doe", "Programming", "12345");
+        addBook("Cyber Security Essentials", "Deepanshu Yadav", "Cybersecurity", "67890");
+        addBook("Data Structures", "Alice Smith", "Programming", "11111");
+        addBook("Operating Systems", "Bob Johnson", "Technology", "22222");
+        addBook("Artificial Intelligence", "Carol Lee", "AI", "33333");
+        addBook("Networking Basics", "David Kim", "Networking", "44444");
+        addBook("Database Management", "Eve Adams", "Database", "55555");
+        addBook("Web Development", "Frank Wright", "Web", "66666");
+        addBook("Machine Learning", "Grace Hopper", "AI", "77777");
+        addBook("Cyber Defense", "Alan Turing", "Cybersecurity", "88888");
 
         System.out.println("Library Management System");
         System.out.println("1. Search  2. Borrow  3. Return  4. Reserve  5. Exit");
 
-        java.util.Scanner scanner = new java.util.Scanner(System.in);
+        Scanner scanner = new Scanner(System.in);
 
         while (true) {
             System.out.print("\nEnter your choice: ");
             int choice = scanner.nextInt();
-            scanner.nextLine(); 
+            scanner.nextLine(); // Consume newline
 
             switch (choice) {
                 case 1:
@@ -127,12 +139,12 @@ public class LibrarySystem {
                 case 2:
                     System.out.print("Enter title, user, current day (e.g., 1-365), return after days: ");
                     borrowBook(scanner.nextLine(), scanner.nextLine(), scanner.nextInt(), scanner.nextInt());
-                    scanner.nextLine(); 
+                    scanner.nextLine(); // Consume newline
                     break;
                 case 3:
                     System.out.print("Enter title, user, and current day: ");
                     returnBook(scanner.nextLine(), scanner.nextLine(), scanner.nextInt());
-                    scanner.nextLine(); 
+                    scanner.nextLine(); // Consume newline
                     break;
                 case 4:
                     System.out.print("Enter title and user: ");
