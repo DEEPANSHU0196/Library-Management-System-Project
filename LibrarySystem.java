@@ -1,6 +1,4 @@
 import java.util.Scanner;
-import java.util.ArrayList;
-import java.util.List;
 
 class Book {
     String title;
@@ -10,7 +8,7 @@ class Book {
     boolean isAvailable;
     String borrowedBy;
     String reservedBy;
-    int dueDate; // Represented as days (e.g., day of the year)
+    int dueDate;
 
     public Book(String title, String author, String genre, String isbn) {
         this.title = title;
@@ -20,43 +18,37 @@ class Book {
         this.isAvailable = true;
         this.borrowedBy = null;
         this.reservedBy = null;
-        this.dueDate = -1; // -1 means no due date set
+        this.dueDate = -1;
     }
 }
 
 public class LibrarySystem {
-    static List<Book> books = new ArrayList<>(); // Using ArrayList for dynamic size
+    static Book[] books = new Book[100];
     static int bookCount = 0;
 
-    // Add a book to the system
     public static void addBook(String title, String author, String genre, String isbn) {
-        books.add(new Book(title, author, genre, isbn));
-        bookCount++;
+        books[bookCount++] = new Book(title, author, genre, isbn);
         System.out.println("Book added successfully!");
     }
 
-    // Search for a book by title, author, genre, or ISBN
     public static void searchBook(String query) {
         System.out.println("Search Results:");
         for (int i = 0; i < bookCount; i++) {
-            Book book = books.get(i);
-            if (book.title.contains(query) || book.author.contains(query) ||
-                book.genre.contains(query) || book.isbn.contains(query)) {
-                System.out.println(book.title + " by " + book.author +
-                        " (Genre: " + book.genre + ", ISBN: " + book.isbn +
-                        ", Available: " + book.isAvailable + ")");
+            if (books[i].title.contains(query) || books[i].author.contains(query) ||
+                books[i].genre.contains(query) || books[i].isbn.contains(query)) {
+                System.out.println(books[i].title + " by " + books[i].author +
+                        " (Genre: " + books[i].genre + ", ISBN: " + books[i].isbn +
+                        ", Available: " + books[i].isAvailable + ")");
             }
         }
     }
 
-    // Borrow a book
     public static void borrowBook(String title, String user, int currentDay, int returnAfterDays) {
         for (int i = 0; i < bookCount; i++) {
-            Book book = books.get(i);
-            if (book.title.equalsIgnoreCase(title) && book.isAvailable) {
-                book.isAvailable = false;
-                book.borrowedBy = user;
-                book.dueDate = currentDay + returnAfterDays; // Set the due date
+            if (books[i].title.equalsIgnoreCase(title) && books[i].isAvailable) {
+                books[i].isAvailable = false;
+                books[i].borrowedBy = user;
+                books[i].dueDate = currentDay + returnAfterDays;
                 System.out.println("Book borrowed successfully! Due in " + returnAfterDays + " days.");
                 return;
             }
@@ -64,28 +56,23 @@ public class LibrarySystem {
         System.out.println("Book is not available or does not exist.");
     }
 
-    // Return a book
     public static void returnBook(String title, String user, int currentDay) {
         for (int i = 0; i < bookCount; i++) {
-            Book book = books.get(i);
-            if (book.title.equalsIgnoreCase(title) && user.equals(book.borrowedBy)) {
-                // Check for overdue
-                if (currentDay > book.dueDate) {
-                    int daysOverdue = currentDay - book.dueDate;
+            if (books[i].title.equalsIgnoreCase(title) && user.equals(books[i].borrowedBy)) {
+                if (currentDay > books[i].dueDate) {
+                    int daysOverdue = currentDay - books[i].dueDate;
                     System.out.println("Book is overdue! Penalty: " + daysOverdue * 10 + " units.");
                 }
 
-                // Reset book status
-                book.isAvailable = true;
-                book.borrowedBy = null;
-                book.dueDate = -1;
+                books[i].isAvailable = true;
+                books[i].borrowedBy = null;
+                books[i].dueDate = -1;
 
-                // Notify reserved user if applicable
-                if (book.reservedBy != null) {
-                    System.out.println("Book reserved by " + book.reservedBy + " will be notified.");
-                    book.isAvailable = false; // Book goes to reserved user
-                    book.borrowedBy = book.reservedBy;
-                    book.reservedBy = null;
+                if (books[i].reservedBy != null) {
+                    System.out.println("Book reserved by " + books[i].reservedBy + " will be notified.");
+                    books[i].isAvailable = false;
+                    books[i].borrowedBy = books[i].reservedBy;
+                    books[i].reservedBy = null;
                 }
 
                 System.out.println("Book returned successfully!");
@@ -95,12 +82,10 @@ public class LibrarySystem {
         System.out.println("Book not found or user mismatch.");
     }
 
-    // Reserve a book
     public static void reserveBook(String title, String user) {
         for (int i = 0; i < bookCount; i++) {
-            Book book = books.get(i);
-            if (book.title.equalsIgnoreCase(title) && !book.isAvailable && book.reservedBy == null) {
-                book.reservedBy = user;
+            if (books[i].title.equalsIgnoreCase(title) && !books[i].isAvailable && books[i].reservedBy == null) {
+                books[i].reservedBy = user;
                 System.out.println("Book reserved successfully!");
                 return;
             }
@@ -109,7 +94,6 @@ public class LibrarySystem {
     }
 
     public static void main(String[] args) {
-        // Add sample books
         addBook("Java Programming", "John Doe", "Programming", "12345");
         addBook("Cyber Security Essentials", "Deepanshu Yadav", "Cybersecurity", "67890");
         addBook("Data Structures", "Alice Smith", "Programming", "11111");
@@ -122,14 +106,14 @@ public class LibrarySystem {
         addBook("Cyber Defense", "Alan Turing", "Cybersecurity", "88888");
 
         System.out.println("Library Management System");
-        System.out.println("1. Search  2. Borrow  3. Return  4. Reserve  5. Exit");
+        System.out.println("1. Search  2. Borrow  3. Return  4. Reserve  5. Add Book  6. Exit");
 
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
             System.out.print("\nEnter your choice: ");
             int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
+            scanner.nextLine();
 
             switch (choice) {
                 case 1:
@@ -139,18 +123,22 @@ public class LibrarySystem {
                 case 2:
                     System.out.print("Enter title, user, current day (e.g., 1-365), return after days: ");
                     borrowBook(scanner.nextLine(), scanner.nextLine(), scanner.nextInt(), scanner.nextInt());
-                    scanner.nextLine(); // Consume newline
+                    scanner.nextLine();
                     break;
                 case 3:
                     System.out.print("Enter title, user, and current day: ");
                     returnBook(scanner.nextLine(), scanner.nextLine(), scanner.nextInt());
-                    scanner.nextLine(); // Consume newline
+                    scanner.nextLine();
                     break;
                 case 4:
                     System.out.print("Enter title and user: ");
                     reserveBook(scanner.nextLine(), scanner.nextLine());
                     break;
                 case 5:
+                    System.out.print("Enter title, author, genre, and ISBN: ");
+                    addBook(scanner.nextLine(), scanner.nextLine(), scanner.nextLine(), scanner.nextLine());
+                    break;
+                case 6:
                     System.out.println("Exiting system...");
                     scanner.close();
                     return;
