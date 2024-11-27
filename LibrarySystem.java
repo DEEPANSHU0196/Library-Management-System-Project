@@ -53,10 +53,10 @@ public class LibrarySystem {
         for (int i = 0; i < bookCount; i++) {
             if (books[i].title.equalsIgnoreCase(query) || books[i].genre.equalsIgnoreCase(query)) {
                 for (int j = i; j < bookCount - 1; j++) {
-                    books[j] = books[j + 1]; // Shift books to fill the gap
+                    books[j] = books[j + 1];
                 }
-                books[--bookCount] = null; // Reduce book count and clear the last element
-                i--; // Adjust index after shifting
+                books[--bookCount] = null;
+                i--;
                 removed = true;
             }
         }
@@ -87,7 +87,7 @@ public class LibrarySystem {
                 books[i].isAvailable = false;
                 books[i].borrowedBy = user;
                 books[i].dueDate = currentDay + returnAfterDays;
-                System.out.println("Book borrowed successfully! Due date: " + (currentDay + returnAfterDays));
+                System.out.println("Book borrowed successfully! Due date: " + books[i].dueDate);
                 return;
             }
         }
@@ -111,7 +111,8 @@ public class LibrarySystem {
 
                 if (reservedBy != null) {
                     System.out.println("The book was reserved by '" + reservedBy + "'. Notifying them...");
-                    books[i].reservedBy = null; // Clear the reservation
+                    System.out.println("User '" + reservedBy + "' has been notified that the book is now available.");
+                    books[i].reservedBy = null;
                 }
                 return;
             }
@@ -142,86 +143,87 @@ public class LibrarySystem {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        // Pre-load some books
         addBook("Java Programming", "John Doe", "Programming", "12345", "2020-01-01");
         addBook("Cyber Security Essentials", "Deepanshu Yadav", "Cybersecurity", "67890", "2021-05-15");
         addBook("Data Structures", "Alice Smith", "Programming", "11111", "2019-03-22");
 
         System.out.println("Welcome to the Library Management System!");
-        System.out.print("Enter role (user/librarian): ");
-        String role = scanner.nextLine().trim().toLowerCase();
 
-        if (role.equals("user")) {
-            // User Menu
-            System.out.println("User Menu: 1. Search  2. Borrow Book  3. Return Book  4. Exit");
-            while (true) {
-                System.out.print("\nEnter your choice: ");
-                int choice = scanner.nextInt();
-                scanner.nextLine(); // Consume newline
+        while (true) {
+            System.out.print("Enter role (user/librarian/exit): ");
+            String role = scanner.nextLine().trim().toLowerCase();
 
-                switch (choice) {
-                    case 1:
-                        System.out.print("Enter search query: ");
-                        searchBook(scanner.nextLine());
-                        break;
-                    case 2:
-                        System.out.print("Enter title, user, current day (1-365), and days to borrow: ");
-                        borrowBook(scanner.nextLine(), scanner.nextLine(), scanner.nextInt(), scanner.nextInt());
-                        scanner.nextLine();
-                        break;
-                    case 3:
-                        System.out.print("Enter title, user, and current day: ");
-                        returnBook(scanner.nextLine(), scanner.nextLine(), scanner.nextInt());
-                        scanner.nextLine();
-                        break;
-                    case 4:
-                        System.out.println("Exiting...");
-                        return;
-                    default:
-                        System.out.println("Invalid choice!");
+            if (role.equals("exit")) {
+                System.out.println("Exiting the system. Goodbye!");
+                break;
+            } else if (role.equals("user")) {
+                System.out.println("User Menu: 1. Search  2. Borrow Book  3. Return Book  4. Exit to Role Menu");
+                while (true) {
+                    System.out.print("\nEnter your choice: ");
+                    int choice = scanner.nextInt();
+                    scanner.nextLine();
+
+                    if (choice == 4) break;
+
+                    switch (choice) {
+                        case 1:
+                            System.out.print("Enter search query: ");
+                            searchBook(scanner.nextLine());
+                            break;
+                        case 2:
+                            System.out.print("Enter title, user, current day (1-365), and days to borrow: ");
+                            borrowBook(scanner.nextLine(), scanner.nextLine(), scanner.nextInt(), scanner.nextInt());
+                            scanner.nextLine();
+                            break;
+                        case 3:
+                            System.out.print("Enter title, user, and current day: ");
+                            returnBook(scanner.nextLine(), scanner.nextLine(), scanner.nextInt());
+                            scanner.nextLine();
+                            break;
+                        default:
+                            System.out.println("Invalid choice!");
+                    }
                 }
-            }
-        } else if (role.equals("librarian")) {
-            // Librarian Menu
-            System.out.println("Librarian Menu: 1. Add Book  2. Edit Book  3. Remove Book  4. Search  5. Reserve Book  6. Exit");
-            while (true) {
-                System.out.print("\nEnter your choice: ");
-                int choice = scanner.nextInt();
-                scanner.nextLine(); // Consume newline
+            } else if (role.equals("librarian")) {
+                System.out.println("Librarian Menu: 1. Add Book  2. Edit Book  3. Remove Book  4. Search  5. Reserve Book  6. Exit to Role Menu");
+                while (true) {
+                    System.out.print("\nEnter your choice: ");
+                    int choice = scanner.nextInt();
+                    scanner.nextLine();
 
-                switch (choice) {
-                    case 1:
-                        System.out.print("Enter title, author, genre, ISBN, and publication date (yyyy-mm-dd): ");
-                        addBook(scanner.nextLine(), scanner.nextLine(), scanner.nextLine(), scanner.nextLine(), scanner.nextLine());
-                        break;
-                    case 2:
-                        System.out.print("Enter ISBN of the book to edit: ");
-                        String isbn = scanner.nextLine();
-                        System.out.print("Enter new title, author, genre, and publication date (yyyy-mm-dd): ");
-                        editBook(isbn, scanner.nextLine(), scanner.nextLine(), scanner.nextLine(), scanner.nextLine());
-                        break;
-                    case 3:
-                        System.out.print("Enter title or genre to remove books: ");
-                        removeBook(scanner.nextLine());
-                        break;
-                    case 4:
-                        System.out.print("Enter search query: ");
-                        searchBook(scanner.nextLine());
-                        break;
-                    case 5:
-                        System.out.print("Enter title of the book and user name to reserve: ");
-                        reserveBook(scanner.nextLine(), scanner.nextLine());
-                        break;
-                    case 6:
-                        System.out.println("Exiting...");
-                        return;
-                    default:
-                        System.out.println("Invalid choice!");
+                    if (choice == 6) break;
+
+                    switch (choice) {
+                        case 1:
+                            System.out.print("Enter title, author, genre, ISBN, and publication date (yyyy-mm-dd): ");
+                            addBook(scanner.nextLine(), scanner.nextLine(), scanner.nextLine(), scanner.nextLine(), scanner.nextLine());
+                            break;
+                        case 2:
+                            System.out.print("Enter ISBN of the book to edit: ");
+                            String isbn = scanner.nextLine();
+                            System.out.print("Enter new title, author, genre, and publication date (yyyy-mm-dd): ");
+                            editBook(isbn, scanner.nextLine(), scanner.nextLine(), scanner.nextLine(), scanner.nextLine());
+                            break;
+                        case 3:
+                            System.out.print("Enter title or genre to remove books: ");
+                            removeBook(scanner.nextLine());
+                            break;
+                        case 4:
+                            System.out.print("Enter search query: ");
+                            searchBook(scanner.nextLine());
+                            break;
+                        case 5:
+                            System.out.print("Enter title of the book and user name to reserve: ");
+                            reserveBook(scanner.nextLine(), scanner.nextLine());
+                            break;
+                        default:
+                            System.out.println("Invalid choice!");
+                    }
                 }
+            } else {
+                System.out.println("Invalid role!");
             }
-        } else {
-            System.out.println("Invalid role! Exiting...");
         }
         scanner.close();
-}
+    }
 }
