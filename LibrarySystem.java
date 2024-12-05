@@ -227,3 +227,18 @@ public class LibrarySystem {
         scanner.close();
     }
 }
+
+
+
+
+public static void searchBook(String query) {
+        System.out.println("Search Results:");
+        for (int i = 0; i < bookCount; i++) {
+            if (books[i].title.contains(query) || books[i].author.contains(query) ||
+                books[i].genre.contains(query) || books[i].isbn.contains(query)) {
+                System.out.println(books[i].title + " by " + books[i].author +
+                        " (Genre: " + books[i].genre + ", ISBN: " + books[i].isbn +
+                        ", Available: " + books[i].isAvailable + ")");
+            }
+        }
+    }
